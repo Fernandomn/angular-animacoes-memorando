@@ -2,24 +2,15 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 
-import { state, style, trigger } from '@angular/animations';
 import { TarefaService } from 'src/app/service/tarefa.service';
+import { highlightedStateTrigger } from '../animations/animations';
 import { Tarefa } from '../interface/tarefa';
-import { filter } from 'rxjs';
 
 @Component({
   selector: 'app-lista-tarefas',
   templateUrl: './lista-tarefas.component.html',
   styleUrls: ['./lista-tarefas.component.css'],
-  animations: [
-    trigger('highlightedState', [
-      state('default', style({ border: '2px solid #b2b6ff' })),
-      state(
-        'highlighted',
-        style({ border: '4px solid #b2b6ff', filter: 'brightness' })
-      ),
-    ]),
-  ],
+  animations: [highlightedStateTrigger],
 })
 export class ListaTarefasComponent implements OnInit {
   listaTarefas: Tarefa[] = [];
