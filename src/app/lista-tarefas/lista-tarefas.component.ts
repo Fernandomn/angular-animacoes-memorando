@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { state, style, trigger } from '@angular/animations';
 import { TarefaService } from 'src/app/service/tarefa.service';
 import { Tarefa } from '../interface/tarefa';
+import { filter } from 'rxjs';
 
 @Component({
   selector: 'app-lista-tarefas',
@@ -13,7 +14,10 @@ import { Tarefa } from '../interface/tarefa';
   animations: [
     trigger('highlightedState', [
       state('default', style({ border: '2px solid #b2b6ff' })),
-      state('highlighted', style({ border: '4px solid #b2b6ff' })),
+      state(
+        'highlighted',
+        style({ border: '4px solid #b2b6ff', filter: 'brightness' })
+      ),
     ]),
   ],
 })
@@ -22,6 +26,7 @@ export class ListaTarefasComponent implements OnInit {
   formAberto: boolean = false;
   categoria: string = '';
   validado: boolean = false;
+  indexTarefa: number = -1;
 
   formulario: FormGroup = this.fomBuilder.group({
     id: [0],
