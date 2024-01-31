@@ -1,14 +1,21 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 
+import { state, style, trigger } from '@angular/animations';
 import { TarefaService } from 'src/app/service/tarefa.service';
 import { Tarefa } from '../interface/tarefa';
 
 @Component({
   selector: 'app-lista-tarefas',
   templateUrl: './lista-tarefas.component.html',
-  styleUrls: ['./lista-tarefas.component.css']
+  styleUrls: ['./lista-tarefas.component.css'],
+  animations: [
+    trigger('highlightedState', [
+      state('default', style({ border: '2px solid #b2b6ff' })),
+      state('highlighted', style({ border: '4px solid #b2b6ff' })),
+    ]),
+  ],
 })
 export class ListaTarefasComponent implements OnInit {
   listaTarefas: Tarefa[] = [];
