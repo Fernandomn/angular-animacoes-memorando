@@ -93,6 +93,7 @@
                 : 'icone-unchecked'
             "
             (click)="finalizarTarefa(tarefa.id)"
+            [@checkButton]="tarefa.id === currentId ? 'checked' : 'unchecked'"
           ></button>
         </p>
       </div>
