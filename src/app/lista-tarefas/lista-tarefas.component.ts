@@ -4,8 +4,10 @@ import { Router } from '@angular/router';
 
 import { TarefaService } from 'src/app/service/tarefa.service';
 import {
-  highlightedStateTrigger,
   checkButtonTrigger,
+  filterTrigger,
+  formButtonTrigger,
+  highlightedStateTrigger,
   shownStateTrigger,
 } from '../animations/animations';
 import { Tarefa } from '../interface/tarefa';
@@ -14,22 +16,29 @@ import { Tarefa } from '../interface/tarefa';
   selector: 'app-lista-tarefas',
   templateUrl: './lista-tarefas.component.html',
   styleUrls: ['./lista-tarefas.component.css'],
-  animations: [highlightedStateTrigger, shownStateTrigger, checkButtonTrigger],
+  animations: [
+    highlightedStateTrigger,
+    shownStateTrigger,
+    checkButtonTrigger,
+    filterTrigger,
+    formButtonTrigger,
+  ],
 })
 export class ListaTarefasComponent implements OnInit {
   listaTarefas: Tarefa[] = [];
-  formAberto: boolean = false;
+  formAberto: boolean = true;
   categoria: string = '';
   validado: boolean = false;
   indexTarefa: number = -1;
   currentId: number = -1;
-
+  campoBusca: string = '';
+  filteredTasks: Tarefa[] = [];
   formulario: FormGroup = this.fomBuilder.group({
     id: [0],
     descricao: ['', Validators.required],
     statusFinalizado: [false, Validators.required],
-    categoria: ['', Validators.required],
-    prioridade: ['', Validators.required],
+    categoria: ['Casa', Validators.required],
+    prioridade: ['Alta', Validators.required],
   });
 
   constructor(
@@ -41,8 +50,20 @@ export class ListaTarefasComponent implements OnInit {
   ngOnInit(): Tarefa[] {
     this.service.listar(this.categoria).subscribe((listaTarefas) => {
       this.listaTarefas = listaTarefas;
+      this.filteredTasks = listaTarefas;
     });
-    return this.listaTarefas;
+    return this.filteredTasks;
+  }
+
+  filterTasksByDescription(searchString: string) {
+    this.campoBusca = searchString.trim().toLowerCase();
+    if (this.campoBusca) {
+      this.filteredTasks = this.listaTarefas.filter((task) =>
+        task.descricao.toLowerCase().includes(this.campoBusca)
+      );
+    } else {
+      this.filteredTasks = this.listaTarefas;
+    }
   }
 
   mostrarOuEsconderFormulario() {
@@ -125,7 +146,7 @@ export class ListaTarefasComponent implements OnInit {
 
   listarAposCheck() {
     this.service.listar(this.categoria).subscribe((listaTarefas) => {
-      this.listaTarefas = listaTarefas;
+      this.filteredTasks = listaTarefas;
     });
   }
 
