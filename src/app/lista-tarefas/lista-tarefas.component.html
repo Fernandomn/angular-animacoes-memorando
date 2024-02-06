@@ -7,6 +7,7 @@
     [formGroup]="formulario"
     *ngIf="formAberto"
     @shownState
+    [@formButton]="formulario.valid ? 'valid' : 'invalid'"
   >
     <label for="descricao">Descrição da tarefa</label>
     <input
@@ -46,7 +47,6 @@
     </app-mensagem>
     <div class="botoes-form">
       <button
-        [@formButton]="formulario.valid ? 'valid' : 'invalid'"
         (click)="salvarTarefa()"
         class="botao-form"
         [ngClass]="habilitarBotao()"
