@@ -27,8 +27,12 @@ export class TarefaService {
     });
   }
 
-  criar(tarefa: Tarefa): Observable<Tarefa> {
-    return this.http.post<Tarefa>(this.API, tarefa);
+  criar(tarefa: Tarefa): void {
+    this.http.post<Tarefa>(this.API, tarefa).subscribe((newTask) => {
+      const tasks = this.tasksSubject.getValue();
+      tasks.unshift(newTask);
+      this.tasksSubject.next(tasks);
+    });
   }
 
   editar(tarefa: Tarefa): Observable<Tarefa> {
