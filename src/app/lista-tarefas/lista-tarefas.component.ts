@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
 
+import { Subscription } from 'rxjs';
 import { TarefaService } from 'src/app/service/tarefa.service';
 import {
   checkButtonTrigger,
@@ -37,6 +37,7 @@ export class ListaTarefasComponent implements OnInit {
   currentId: number = -1;
   campoBusca: string = '';
   filteredTasks: Tarefa[] = [];
+  tarefasSubscription: Subscription = new Subscription();
   formulario: FormGroup = this.fomBuilder.group({
     id: [0],
     descricao: ['', Validators.required],
@@ -44,19 +45,20 @@ export class ListaTarefasComponent implements OnInit {
     categoria: ['', Validators.required],
     prioridade: ['', Validators.required],
   });
+  estadoBotao: 'checked' | 'unchecked' = 'unchecked';
 
   constructor(
     private service: TarefaService,
-    private router: Router,
     private fomBuilder: FormBuilder
   ) {}
 
-  ngOnInit(): Tarefa[] {
-    this.service.listar(this.categoria).subscribe((listaTarefas) => {
+  ngOnInit(): void {
+    this.service.listar();
+
+    this.tarefasSubscription = this.service.tasks$.subscribe((listaTarefas) => {
       this.listaTarefas = listaTarefas;
       this.filteredTasks = listaTarefas;
     });
-    return this.filteredTasks;
   }
 
   filterTasksByDescription(searchString: string) {
@@ -84,22 +86,24 @@ export class ListaTarefasComponent implements OnInit {
   }
 
   editarTarefa() {
-    this.service.editar(this.formulario.value).subscribe({
-      complete: () => this.atualizarComponente(),
-    });
+    if (this.formulario.valid) {
+      const editedTask = this.formulario.value;
+      this.service.editar(editedTask, true);
+      this.resetarFormulario();
+    }
   }
 
   criarTarefa() {
-    this.service.criar(this.formulario.value).subscribe({
-      complete: () => this.atualizarComponente(),
-    });
+    if (this.formulario.valid) {
+      const newTask = this.formulario.value;
+      this.service.criar(newTask);
+      this.resetarFormulario();
+    }
   }
 
-  excluirTarefa(id: number) {
-    if (id) {
-      this.service.excluir(id).subscribe({
-        complete: () => this.recarregarComponente(),
-      });
+  excluirTarefa(tarefa: Tarefa) {
+    if (tarefa.id) {
+      this.service.excluir(tarefa.id);
     }
   }
 
@@ -117,15 +121,6 @@ export class ListaTarefasComponent implements OnInit {
     });
   }
 
-  recarregarComponente() {
-    this.router.navigate(['/listaTarefas']);
-  }
-
-  atualizarComponente() {
-    this.recarregarComponente();
-    this.resetarFormulario();
-  }
-
   carregarParaEditar(id: number) {
     this.service.buscarPorId(id!).subscribe((tarefa) => {
       this.formulario = this.fomBuilder.group({
@@ -139,19 +134,12 @@ export class ListaTarefasComponent implements OnInit {
     this.formAberto = true;
   }
 
-  finalizarTarefa(id: number) {
-    this.currentId = id;
-    this.service.buscarPorId(id!).subscribe((tarefa) => {
-      this.service.atualizarStatusTarefa(tarefa).subscribe(() => {
-        this.listarAposCheck();
-      });
-    });
-  }
+  finalizarTarefa(tarefa: Tarefa) {
+    this.currentId = tarefa.id;
 
-  listarAposCheck() {
-    this.service.listar(this.categoria).subscribe((listaTarefas) => {
-      this.filteredTasks = listaTarefas;
-    });
+    this.service.atualizarStatusTarefa(tarefa);
+
+    this.estadoBotao = tarefa.statusFinalizado ? 'checked' : 'unchecked';
   }
 
   habilitarBotao(): string {
