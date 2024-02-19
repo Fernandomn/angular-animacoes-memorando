@@ -9,7 +9,7 @@ import {
   flyInOutTrigger,
   formButtonTrigger,
   highlightedStateTrigger,
-  listStateTtrigger,
+  listStateTrigger,
   shakeAnimationTrigger,
   shownStateTrigger,
 } from '../animations/animations';
@@ -27,7 +27,7 @@ import { Tarefa } from '../interface/tarefa';
     formButtonTrigger,
     flyInOutTrigger,
     shakeAnimationTrigger,
-    listStateTtrigger,
+    listStateTrigger,
   ],
 })
 export class ListaTarefasComponent implements OnInit {

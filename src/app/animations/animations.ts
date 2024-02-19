@@ -151,7 +151,7 @@ export const shakeAnimationTrigger = trigger('shakeAnimation', [
   ]),
 ]);
 
-export const listStateTtrigger = trigger('listState', [
+export const listStateTrigger = trigger('listState', [
   transition('* => *', [
     query(
       ':enter',
